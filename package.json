@@ -1,0 +1,47 @@
+{
+  "name": "spm-agent-os",
+  "version": "1.30.0",
+  "description": "SPM Agent for monitoring operating system metrics",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sematext/spm-agent-os.git"
+  },
+  "keywords": [
+    "SPM",
+    "APM",
+    "application performance monitoring",
+    "Sematext",
+    "performance monitoring",
+    "monitoring",
+    "alerting",
+    "anomaly detection",
+    "heartbeat",
+    "metrics",
+    "devops",
+    "operations",
+    "dashboards",
+    "profiling",
+    "linux monitoring",
+    "mac os x monitoring",
+    "agent",
+    "logging"
+  ],
+  "author": "Sematext Group, Inc.",
+  "license": "Copyright (c) Sematext Group, Inc.",
+  "bugs": {
+    "url": "https://github.com/sematext/spm-agent-os/issues"
+  },
+  "homepage": "http://www.sematext.com",
+  "dependencies": {
+    "flat": "^1.6.0",
+    "measured": "^1.0.2",
+    "node-df": "^0.1.1",
+    "procfs-stats": "0.0.4",
+    "spm-agent": "^1.28.0",
+    "which": "^1.2.0"
+  }
+}
