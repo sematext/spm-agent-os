@@ -34,7 +34,8 @@ function vmstatS (callback) {
           active: 2,
           inactive: 3,
           free: 4,
-          buffer: 5
+          buffer: 5,
+          cache: 6
         }
         /* var cpuMapping = {
           user: 10,
@@ -58,14 +59,16 @@ function vmstatS (callback) {
           // cpu: mapValues(cpuMapping),
           memory: mapValues(memoryMapping)
         }
-        cpuStats(function (cpu) {
-          rv.cpu = cpu
-          diskIOStats(function (disks) {
-            // console.log(disks)
-            rv.disks = disks
-            callback(null, rv)
+        setTimeout (function () {
+          cpuStats(function (cpu) {
+            rv.cpu = cpu
+            diskIOStats(function (disks) {
+              // console.log(disks)
+              rv.disks = disks
+              callback(null, rv)
+            })
           })
-        })
+        }, 1000)
       }
     } catch (error) {
       callback(error)
