@@ -133,7 +133,7 @@ module.exports = function () {
                   filters: '',
                   value: [vmstats.memory.used * 1024,
                     vmstats.memory.free * 1024,
-                    vmstat.cache * 1024,
+                    vmstats.memory.cache * 1024,
                     vmstats.memory.buffer * 1024,
                     vmstat.swapd * 1024,
                     vmstat.si,
