@@ -131,7 +131,8 @@ module.exports = function () {
                   type: 'os',
                   name: 'osmem',
                   filters: '',
-                  value: [vmstats.memory.used * 1024,
+                  value: [
+                    (vmstats.memory.used - (vmstats.memory.buffer + vmstats.memory.cache)) * 1024,
                     vmstats.memory.free * 1024,
                     vmstats.memory.cache * 1024,
                     vmstats.memory.buffer * 1024,
