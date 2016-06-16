@@ -72,7 +72,6 @@ module.exports = function () {
       this.agent = agent
       var cpuProperties = ['user', 'nice', 'irq', 'system', 'idle', 'iowait', 'softirq', 'steal']
       var cpuLastValues = {}
-               
       os.cpus().forEach(function (cpu, i) {
         cpuLastValues[i] = {idle: 0, user: 0, system: 0, irq: 0, nice: 0, iowait: 0, softirq: 0, steal: 0}
       })
@@ -158,31 +157,35 @@ module.exports = function () {
                     console.log(diskInfoErr)
                   }
                 }
-                var cpuTotal = 0
-                var i = 0
-                cpuProperties.forEach(function (property) {
-                  if (isNaN(Number(cpuLastValues[i][property]))) {
-                    cpuLastValues[i][property] = 0
+                if (vmstats.cpu) {
+                  var cpuTotal = 0
+                  var i = 0
+                  cpuProperties.forEach(function (property) {
+                    if (isNaN(Number(cpuLastValues[i][property]))) {
+                      cpuLastValues[i][property] = 0
+                    }
+                    cpuLastValues[i][property] = Number(vmstats.cpu[property]) - Number(cpuLastValues[i][property])
+                    cpuTotal = Number(cpuTotal) + Number(cpuLastValues[i][property])
+                  })
+                  var oscpu = {
+                    ts: time,
+                    type: 'os',
+                    name: 'oscpu',
+                    filters: '',
+                    value: [
+                      (cpuLastValues[i].user / cpuTotal) * 100,
+                      (cpuLastValues[i].nice / cpuTotal) * 100,
+                      (cpuLastValues[i].system / cpuTotal) * 100,
+                      (cpuLastValues[i].idle / cpuTotal) * 100,
+                      (cpuLastValues[i].iowait / cpuTotal) * 100,
+                      (cpuLastValues[i].irq / cpuTotal) * 100,
+                      (cpuLastValues[i].softirq / cpuTotal) * 100,
+                      (cpuLastValues[i].steal / cpuTotal) * 100],
+                    sct: 'OS'
                   }
-                  cpuLastValues[i][property] = Number(vmstats.cpu[property]) - Number(cpuLastValues[i][property])
-                  cpuTotal = Number(cpuTotal) + Number(cpuLastValues[i][property])
+                  agent.addMetrics(oscpu)
+                }
 
-                })  
-                agent.addMetrics({
-                  ts: time,
-                  type: 'os',
-                  name: 'oscpu',
-                  filters: '',
-                  value: [(cpuLastValues[i].user / cpuTotal) * 100,
-                    (cpuLastValues[i].nice / cpuTotal) * 100,
-                    (cpuLastValues[i].system / cpuTotal) * 100,
-                    (cpuLastValues[i].idle / cpuTotal) * 100,
-                    (cpuLastValues[i].iowait / cpuTotal) * 100,
-                    (cpuLastValues[i].irq / cpuTotal) * 100,
-                    (cpuLastValues[i].softirq / cpuTotal) * 100,
-                    (cpuLastValues[i].steal / cpuTotal) * 100],
-                  sct: 'OS'
-                })
               })
             })
           }
