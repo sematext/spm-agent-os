@@ -59,7 +59,7 @@ function vmstatS (callback) {
           // cpu: mapValues(cpuMapping),
           memory: mapValues(memoryMapping)
         }
-        setTimeout (function () {
+        setTimeout(function () {
           cpuStats(function (cpu) {
             rv.cpu = cpu
             diskIOStats(function (disks) {
@@ -124,20 +124,9 @@ function df (callback) {
 
 function cpuStats (cb) {
   procfs.cpu(function (flag, data) {
-    var cpu = {}
     if (data && data.cpu) {
-      Object.keys(data).forEach(function (cpuName) {
-        if (data[cpuName].user || data[cpuName].system) {
-          Object.keys(data[cpuName]).forEach(function (cpuProperty) {
-            if (!cpu[cpuProperty]) {
-              cpu[cpuProperty] = 0
-            }
-            cpu[cpuProperty] = Number(cpu[cpuProperty]) + Number(data[cpuName][cpuProperty])
-          })
-        }
-      })
+      cb(data.cpu)
     }
-    cb(cpu)
   })
 }
 
@@ -168,3 +157,4 @@ module.exports.vmstatS = vmstatS
 module.exports.vmstat = vmstat
 module.exports.df = df
 module.exports.networkStats = networkStats
+                              
