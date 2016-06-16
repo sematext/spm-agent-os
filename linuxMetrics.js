@@ -7,6 +7,7 @@
  * This source code is to be used exclusively by users and customers of Sematext.
  * Please see the full license (found in LICENSE in this distribution) for details on its license and the licenses of its dependencies.
  */
+ 'use strict'
 var which = require('which')
 var vmstatCommand = which.sync('vmstat')
 var exec = require('child_process').exec
@@ -122,10 +123,14 @@ function df (callback) {
   })
 }
 
+var lastValidCpu = {idle: 0, user: 0, system: 0, irq: 0, nice: 0, iowait: 0, softirq: 0, steal: 0}
 function cpuStats (cb) {
   procfs.cpu(function (flag, data) {
     if (data && data.cpu) {
+      lastValidCpu = data.cpu
       cb(data.cpu)
+    } else {
+      return lastValidCpu
     }
   })
 }
@@ -157,4 +162,4 @@ module.exports.vmstatS = vmstatS
 module.exports.vmstat = vmstat
 module.exports.df = df
 module.exports.networkStats = networkStats
-                              
+

@@ -70,12 +70,12 @@ module.exports = function () {
       this.isLinux = (os.platform() === 'linux')
       this.formatLine = this._formatLine.bind(agent)
       this.agent = agent
-      var cpuLastValues = {}
-      os.cpus().forEach(function (cpu, i) {
-        cpuLastValues[i] = {idle: 0, user: 0, sys: 0, irq: 0, nice: 0, wait: 0, softirq: 0, stolen: 0}
-      })
-      // var cpuProperties = ['user', 'nice', 'irq', 'sys', 'idle', 'wait', 'softirq', 'stolen']
       var cpuProperties = ['user', 'nice', 'irq', 'system', 'idle', 'iowait', 'softirq', 'steal']
+      var cpuLastValues = {}
+               
+      os.cpus().forEach(function (cpu, i) {
+        cpuLastValues[i] = {idle: 0, user: 0, system: 0, irq: 0, nice: 0, iowait: 0, softirq: 0, steal: 0}
+      })
       if (cluster.isMaster || process.env.NODE_APP_INSTANCE === 0 || process.env.SPM_MASTER_MODE === 1) {
         var timerId = setInterval(function () {
           var time = Date.now()
@@ -161,13 +161,13 @@ module.exports = function () {
                 var cpuTotal = 0
                 var i = 0
                 cpuProperties.forEach(function (property) {
-                  // console.log ('CPU ' + property + ' ' + vmstats.cpu [property])
                   if (isNaN(Number(cpuLastValues[i][property]))) {
                     cpuLastValues[i][property] = 0
                   }
                   cpuLastValues[i][property] = Number(vmstats.cpu[property]) - Number(cpuLastValues[i][property])
                   cpuTotal = Number(cpuTotal) + Number(cpuLastValues[i][property])
-                })
+
+                })  
                 agent.addMetrics({
                   ts: time,
                   type: 'os',
