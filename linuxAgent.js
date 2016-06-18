@@ -43,6 +43,7 @@ function calcDiff (name, value) {
  * @returns {Agent}
  */
 module.exports = function () {
+  var cpuLastValues = {}
   var linuxAgent = new Agent({
     // osnet    1457010656149    lo    0    0
     _formatLine: function (metric) {
@@ -70,11 +71,6 @@ module.exports = function () {
       this.isLinux = (os.platform() === 'linux')
       this.formatLine = this._formatLine.bind(agent)
       this.agent = agent
-      var cpuProperties = ['user', 'nice', 'irq', 'system', 'idle', 'iowait', 'softirq', 'steal']
-      var cpuLastValues = {}
-      os.cpus().forEach(function (cpu, i) {
-        cpuLastValues[i] = {idle: 0, user: 0, system: 0, irq: 0, nice: 0, iowait: 0, softirq: 0, steal: 0}
-      })
       if (cluster.isMaster || process.env.NODE_APP_INSTANCE === 0 || process.env.SPM_MASTER_MODE === 1) {
         var timerId = setInterval(function () {
           var time = Date.now()
@@ -85,6 +81,43 @@ module.exports = function () {
           }
           agent.addMetrics({ts: time, type: 'os', name: 'oslo', filters: '', value: [loadAvg1min], sct: 'OS'})
           if (this.isLinux) {
+            cpuLastValues['cpu'] = {idle: 0, user: 0, system: 0, irq: 0, nice: 0, iowait: 0, softirq: 0, steal: 0, total: 0}
+            
+            linux.cpuStats(function (cpu) {
+              if (!cpu || !cpu.cpu) {
+                return
+              }
+              var cpuProperties = ['user', 'nice', 'irq', 'system', 'idle', 'iowait', 'softirq', 'steal']
+
+              var key = 'cpu'
+              cpuProperties.forEach(function (property) {
+                cpuLastValues[key][property] = calcDiff(key + property, Number(cpu[key][property]))
+                cpuLastValues[key]['total'] = Number(cpuLastValues[key]['total']) + Number(cpuLastValues[key][property])
+              })
+              var cpuTotal = cpuLastValues[key]['total']
+              var oscpu = {
+                ts: time,
+                type: 'os',
+                name: 'oscpu',
+                filters: '',
+                value: [
+                  (cpuLastValues[key].user / cpuTotal) * 100,
+                  (cpuLastValues[key].nice / cpuTotal) * 100,
+                  (cpuLastValues[key].system / cpuTotal) * 100,
+                  (cpuLastValues[key].idle / cpuTotal) * 100,
+                  (cpuLastValues[key].iowait / cpuTotal) * 100,
+                  (cpuLastValues[key].irq / cpuTotal) * 100,
+                  (cpuLastValues[key].softirq / cpuTotal) * 100,
+                  (cpuLastValues[key].steal / cpuTotal) * 100
+                ],
+                sct: 'OS'
+              }
+              if (!/null/.test(JSON.stringify(oscpu))) {
+                agent.addMetrics(oscpu)
+              }
+              
+              })
+    
             linux.networkStats(function (data) {
               if (data) {
                 data.forEach(function (netStat) {
@@ -98,6 +131,7 @@ module.exports = function () {
                 })
               }
             })
+
             linux.df(function dfMetrics (err, data) {
               if (err) {
                 return logger.error('Error in df() for disk-usage metrics:' + err)
@@ -114,6 +148,7 @@ module.exports = function () {
                 })
               }
             })
+
             linux.vmstat(function (err, vmstat) {
               SpmAgent.Logger.debug('vmstat ', vmstat)
               if (err) {
@@ -148,7 +183,8 @@ module.exports = function () {
                         type: 'os',
                         name: 'osdio',
                         filters: [disk.device],
-                        value: [(calcDiff(disk.device + 'sectors_read', disk.sectors_read) * 512),
+                        value: [
+                          (calcDiff(disk.device + 'sectors_read', disk.sectors_read) * 512),
                           (calcDiff(disk.device + 'sectors_written', disk.sectors_written) * 512)],
                         sct: 'OS'
                       })
@@ -157,35 +193,6 @@ module.exports = function () {
                     console.log(diskInfoErr)
                   }
                 }
-                if (vmstats.cpu) {
-                  var cpuTotal = 0
-                  var i = 0
-                  cpuProperties.forEach(function (property) {
-                    if (isNaN(Number(cpuLastValues[i][property]))) {
-                      cpuLastValues[i][property] = 0
-                    }
-                    cpuLastValues[i][property] = Number(vmstats.cpu[property]) - Number(cpuLastValues[i][property])
-                    cpuTotal = Number(cpuTotal) + Number(cpuLastValues[i][property])
-                  })
-                  var oscpu = {
-                    ts: time,
-                    type: 'os',
-                    name: 'oscpu',
-                    filters: '',
-                    value: [
-                      (cpuLastValues[i].user / cpuTotal) * 100,
-                      (cpuLastValues[i].nice / cpuTotal) * 100,
-                      (cpuLastValues[i].system / cpuTotal) * 100,
-                      (cpuLastValues[i].idle / cpuTotal) * 100,
-                      (cpuLastValues[i].iowait / cpuTotal) * 100,
-                      (cpuLastValues[i].irq / cpuTotal) * 100,
-                      (cpuLastValues[i].softirq / cpuTotal) * 100,
-                      (cpuLastValues[i].steal / cpuTotal) * 100],
-                    sct: 'OS'
-                  }
-                  agent.addMetrics(oscpu)
-                }
-
               })
             })
           }

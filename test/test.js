@@ -16,12 +16,11 @@ var receiverUrl = 'http://localhost:' + port
 config.rcFlat.spmSenderBulkInsertUrl = receiverUrl
 var http = require('http')
 http.createServer(function (req, res) {
-        res.writeHead(200, {'Content-Type': 'text/plain'})
-        res.end('{"code":"200"}\n')
-      }).listen(port, '127.0.0.1')
+  res.writeHead(200, {'Content-Type': 'text/plain'})
+  res.end('{"code":"200"}\n')
+}).listen(port, '127.0.0.1')
 
 describe('SPM OS Metrics tests', function () {
-  
   it('OS Agent sends metrics', function (done) {
     try {
       this.timeout(10000)

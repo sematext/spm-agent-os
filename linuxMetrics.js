@@ -61,13 +61,10 @@ function vmstatS (callback) {
           memory: mapValues(memoryMapping)
         }
         setTimeout(function () {
-          cpuStats(function (cpu) {
-            rv.cpu = cpu
-            diskIOStats(function (disks) {
-              // console.log(disks)
-              rv.disks = disks
-              callback(null, rv)
-            })
+          diskIOStats(function (disks) {
+            // console.log(disks)
+            rv.disks = disks
+            callback(null, rv)
           })
         }, 1000)
       }
@@ -123,11 +120,10 @@ function df (callback) {
   })
 }
 
-var lastValidCpu = {idle: 0, user: 0, system: 0, irq: 0, nice: 0, iowait: 0, softirq: 0, steal: 0}
 function cpuStats (cb) {
   procfs.cpu(function (flag, data) {
     if (!flag && data && data.cpu) {
-      cb(data.cpu)
+      cb(data)
     } else {
       return null
     }
@@ -161,3 +157,4 @@ module.exports.vmstatS = vmstatS
 module.exports.vmstat = vmstat
 module.exports.df = df
 module.exports.networkStats = networkStats
+module.exports.cpuStats = cpuStats
