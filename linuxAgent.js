@@ -82,7 +82,7 @@ module.exports = function () {
           agent.addMetrics({ts: time, type: 'os', name: 'oslo', filters: '', value: [loadAvg1min], sct: 'OS'})
           if (this.isLinux) {
             cpuLastValues['cpu'] = {idle: 0, user: 0, system: 0, irq: 0, nice: 0, iowait: 0, softirq: 0, steal: 0, total: 0}
-            
+
             linux.cpuStats(function (cpu) {
               if (!cpu || !cpu.cpu) {
                 return
@@ -115,9 +115,8 @@ module.exports = function () {
               if (!/null/.test(JSON.stringify(oscpu))) {
                 agent.addMetrics(oscpu)
               }
-              
-              })
-    
+            })
+
             linux.networkStats(function (data) {
               if (data) {
                 data.forEach(function (netStat) {
@@ -160,21 +159,42 @@ module.exports = function () {
                   SpmAgent.Logger.error('error calling vmstat ' + err)
                   return
                 }
-                agent.addMetrics({
-                  ts: time,
-                  type: 'os',
-                  name: 'osmem',
-                  filters: '',
-                  value: [
-                    (vmstats.memory.used - (vmstats.memory.buffer + vmstats.memory.cache)) * 1024,
-                    vmstats.memory.free * 1024,
-                    vmstats.memory.cache * 1024,
-                    vmstats.memory.buffer * 1024,
-                    vmstat.swapd * 1024,
-                    vmstat.si,
-                    vmstat.so],
-                  sct: 'OS'
-                })
+                var checkMemTotal = vmstats.memory.used + vmstats.memory.free + vmstats.memory.buffer + vmstats.memory.cache
+                if (checkMemTotal <= vmstats.memory.total) {
+                  // should be equal on CentoOS 7.2
+                  agent.addMetrics({
+                    ts: time,
+                    type: 'os',
+                    name: 'osmem',
+                    filters: '',
+                    value: [
+                      vmstats.memory.used * 1024,
+                      vmstats.memory.free * 1024,
+                      vmstats.memory.cache * 1024,
+                      vmstats.memory.buffer * 1024,
+                      vmstat.swapd * 1024,
+                      vmstat.si,
+                      vmstat.so],
+                    sct: 'OS'
+                  })
+                } else {
+                  agent.addMetrics({
+                    ts: time,
+                    type: 'os',
+                    name: 'osmem',
+                    filters: '',
+                    value: [
+                      (vmstats.memory.used - (vmstats.memory.buffer + vmstats.memory.cache)) * 1024,
+                      vmstats.memory.free * 1024,
+                      vmstats.memory.cache * 1024,
+                      vmstats.memory.buffer * 1024,
+                      vmstat.swapd * 1024,
+                      vmstat.si,
+                      vmstat.so],
+                    sct: 'OS'
+                  })
+                }
+
                 if (vmstats.disks) {
                   try {
                     vmstats.disks.forEach(function (disk) {
