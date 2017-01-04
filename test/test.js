@@ -44,7 +44,7 @@ describe('SPM OS Metrics tests', function () {
   })
 
   it('FAIL EXPECTED - Wait to fail with wrong SPM-Receiver URL', function (done) {
-    this.timeout(10000)
+    this.timeout(30000)
     config.transmitInterval = 1000
     config.collectionInterval = 500
     config.retransmitInterval = 1000
@@ -68,7 +68,7 @@ describe('SPM OS Metrics tests', function () {
     agent.once('stats', checkMetric)
   })
   it('SUCCESS EXPECTED - Wait for successful transmission to correct SPM-Receiver URL', function (done) {
-    this.timeout(10000)
+    this.timeout(30000)
     var SpmAgent = require('spm-agent')
     var agent = new SpmAgent(receiverUrl)
     var ElAgent = require('../index.js')
@@ -93,7 +93,7 @@ describe('SPM OS Metrics tests', function () {
     agent.once('stats', checkMetrics)
   })
   it('RETRANSMIT EXPECTED - 1st wrong SPM-Receiver URL, then correct URL, wait for retransmit', function (done) {
-    this.timeout(45000)
+    this.timeout(60000)
     config.collectionInterval = 500
     config.retransmitInterval = 1000
     config.recoverInterval = 1000
