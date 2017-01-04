@@ -55,7 +55,7 @@ describe('SPM OS Metrics tests', function () {
     var SpmAgent = require('spm-agent')
     var ElAgent = require('../index.js')
     var elagent = new ElAgent()
-    var agent = new SpmAgent('https://NOTREACHABLE-spm-receiver.sematext.com:443/receiver/v1/_bulk')
+    var agent = new SpmAgent('https://NOTREACHABLE')
     agent.createAgent(elagent)
     var checkMetric = function (stats) {
       if (stats.error > 0) {
@@ -102,7 +102,7 @@ describe('SPM OS Metrics tests', function () {
     config.logger.console = false
     // config.logger.level = 'debug'
     var SpmAgent = require('spm-agent')
-    var agent = new SpmAgent('https://NOT_REACHABLE-spm-receiver.sematext.com:443/receiver/v1/_bulk')
+    var agent = new SpmAgent('https://NOT_REACHABLE')
     var OsAgent = require('../index.js')
     var oagent = new OsAgent()
     agent.createAgent(oagent)
