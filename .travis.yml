@@ -11,3 +11,6 @@ node_js:
 install:
   - npm i mocha -g
   - npm i 
+  - mkdir spmdb
+  - mkdir spmlogs
+
