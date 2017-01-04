@@ -111,6 +111,7 @@ describe('SPM OS Metrics tests', function () {
     }, 5000)
     var eventReceived = false
     agent.on('stats', function (stats) {
+      console.log(stats)
       if (stats.retransmit > 0) {
         if (eventReceived) {
           return
