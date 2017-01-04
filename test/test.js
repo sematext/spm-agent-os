@@ -93,7 +93,7 @@ describe('SPM OS Metrics tests', function () {
     agent.once('stats', checkMetrics)
   })
   it('RETRANSMIT EXPECTED - 1st wrong SPM-Receiver URL, then correct URL, wait for retransmit', function (done) {
-    this.timeout(60000)
+    this.timeout(70000)
     config.collectionInterval = 500
     config.retransmitInterval = 1000
     config.recoverInterval = 1000
@@ -108,7 +108,7 @@ describe('SPM OS Metrics tests', function () {
     agent.createAgent(oagent)
     setTimeout(function () {
       agent.setUrl(receiverUrl)
-    }, 5000)
+    }, 10000)
     var eventReceived = false
     agent.on('stats', function (stats) {
       console.log(stats)
