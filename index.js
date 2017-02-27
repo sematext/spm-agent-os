@@ -20,6 +20,14 @@ var logger = SpmAgent.Logger
  * @returns {Agent}
  */
 module.exports = function () {
+  if (process.env.NODEJS_OS_MONITOR_ENABLED === 'false') {
+    // in case SPM JAVA OS monitor is used,
+    // node based agents don't need to collect OS Metrics
+    return new Agent({
+      start: function (agent) { this.agent = agent },
+      stop: function () {}
+    })
+  }
   if (os.platform() === 'linux') {
     try {
       var LinuxAgent = require('./linuxAgent.js')

@@ -44,7 +44,7 @@ describe('SPM OS Metrics tests', function () {
   })
 
   it('FAIL EXPECTED - Wait to fail with wrong SPM-Receiver URL', function (done) {
-    this.timeout(10000)
+    this.timeout(30000)
     config.transmitInterval = 1000
     config.collectionInterval = 500
     config.retransmitInterval = 1000
@@ -55,7 +55,7 @@ describe('SPM OS Metrics tests', function () {
     var SpmAgent = require('spm-agent')
     var ElAgent = require('../index.js')
     var elagent = new ElAgent()
-    var agent = new SpmAgent('https://NOTREACHABLE-spm-receiver.sematext.com:443/receiver/v1/_bulk')
+    var agent = new SpmAgent('https://NOTREACHABLE')
     agent.createAgent(elagent)
     var checkMetric = function (stats) {
       if (stats.error > 0) {
@@ -68,7 +68,7 @@ describe('SPM OS Metrics tests', function () {
     agent.once('stats', checkMetric)
   })
   it('SUCCESS EXPECTED - Wait for successful transmission to correct SPM-Receiver URL', function (done) {
-    this.timeout(10000)
+    this.timeout(30000)
     var SpmAgent = require('spm-agent')
     var agent = new SpmAgent(receiverUrl)
     var ElAgent = require('../index.js')
@@ -93,7 +93,7 @@ describe('SPM OS Metrics tests', function () {
     agent.once('stats', checkMetrics)
   })
   it('RETRANSMIT EXPECTED - 1st wrong SPM-Receiver URL, then correct URL, wait for retransmit', function (done) {
-    this.timeout(45000)
+    this.timeout(70000)
     config.collectionInterval = 500
     config.retransmitInterval = 1000
     config.recoverInterval = 1000
@@ -102,15 +102,16 @@ describe('SPM OS Metrics tests', function () {
     config.logger.console = false
     // config.logger.level = 'debug'
     var SpmAgent = require('spm-agent')
-    var agent = new SpmAgent('https://NOT_REACHABLE-spm-receiver.sematext.com:443/receiver/v1/_bulk')
+    var agent = new SpmAgent('https://NOT_REACHABLE')
     var OsAgent = require('../index.js')
     var oagent = new OsAgent()
     agent.createAgent(oagent)
     setTimeout(function () {
       agent.setUrl(receiverUrl)
-    }, 5000)
+    }, 10000)
     var eventReceived = false
     agent.on('stats', function (stats) {
+      console.log(stats)
       if (stats.retransmit > 0) {
         if (eventReceived) {
           return
