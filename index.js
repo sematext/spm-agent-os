@@ -71,7 +71,7 @@ module.exports = function () {
           cpuLastValues[i] = {idle: 0, user: 0, sys: 0, irq: 0, nice: 0}
         })
         var cpuProperties = ['user', 'nice', 'irq', 'sys', 'idle']
-        if (cluster.isMaster || process.env.NODE_APP_INSTANCE === 0 || process.env.SPM_MASTER_MODE === 1) {
+        if (cluster.isMaster || process.env.NODE_APP_INSTANCE === 0 || process.env.SPM_MASTER_MODE === '1' || process.env.STARTUP === 'true') {
           var timerId = setInterval(function () {
             var time = new Date().getTime()
             var metrics = {}
