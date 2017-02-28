@@ -9,6 +9,8 @@ node_js:
   - "6"
   - "7"
 install:
+  - uname -a 
+  - vmstat
   - npm i mocha -g
   - npm i 
   - mkdir spmdb
