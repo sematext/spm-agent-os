@@ -137,8 +137,10 @@ module.exports = function () {
               }
               if (data && data.length > 0) {
                 data.forEach(function (disk) {
-                  if (/\/dev\/.+/i.test(disk.filesystem)) {
-                    var dev = disk.filesystem.split('/')[2]
+                  var dev = disk.filesystem
+                  // if (/\/dev\/.+/i.test(disk.filesystem)) {
+                  //   dev = disk.filesystem.split('/')[2]
+                  // }
                     agent.addMetrics({ ts: time, name: 'osdf', filters: [dev],
                       value: [disk.available * 1024, disk.used * 1024],
                       sct: 'OS'
