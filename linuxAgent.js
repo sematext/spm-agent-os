@@ -121,7 +121,10 @@ module.exports = function () {
               if (data) {
                 data.forEach(function (netStat) {
                   if (netStat.bytes && netStat.Interface) {
-                    agent.addMetrics({ ts: time, name: 'osnet', filters: [netStat.Interface || 'unknown'],
+                    agent.addMetrics({
+                      ts: time,
+                      name: 'osnet',
+                      filters: [netStat.Interface || 'unknown'],
                       value: [calcDiff(netStat.Interface + 'tx', Number(netStat.bytes.Transmit)),
                         calcDiff(netStat.Interface + 'rx', Number(netStat.bytes.Receive))],
                       sct: 'OS'
@@ -138,14 +141,16 @@ module.exports = function () {
               if (data && data.length > 0) {
                 data.forEach(function (disk) {
                   var dev = disk.filesystem
-                  // if (/\/dev\/.+/i.test(disk.filesystem)) {
-                  //   dev = disk.filesystem.split('/')[2]
-                  // }
-                    agent.addMetrics({ ts: time, name: 'osdf', filters: [dev],
-                      value: [disk.available * 1024, disk.used * 1024],
-                      sct: 'OS'
-                    })
+                  if (/\/dev\/.+/i.test(disk.filesystem)) {
+                    dev = disk.filesystem.split('/')[2]
                   }
+                  agent.addMetrics({
+                    ts: time,
+                    name: 'osdf',
+                    filters: [dev],
+                    value: [disk.available * 1024, disk.used * 1024],
+                    sct: 'OS'
+                  })
                 })
               }
             })
