@@ -107,7 +107,7 @@ module.exports = function () {
             for (var x in metrics) {
               agent.addMetrics({ts: time, name: x, value: metrics[x], sct: 'OS'})
             }
-          }.bind(this), config.collectionInterval || 30000)
+          }.bind(this), Math.max(config.collectionInterval || 30000) || 30000)
           if (timerId.unref) {
             timerId.unref()
           }

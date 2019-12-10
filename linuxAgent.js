@@ -223,7 +223,7 @@ module.exports = function () {
               })
             })
           }
-        }.bind(this), config.collectionInterval || 30000)
+        }.bind(this), Math.max(config.collectionInterval || 30000) || 30000)
         if (timerId.unref) {
           timerId.unref()
         }
