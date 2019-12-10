@@ -23,9 +23,9 @@ DiskFree.prototype.getPartitions = function (cb) {
     partitionsTxt = partitionsTxt.toString()
     var lines = partitionsTxt.split('\n')
     var partitions = []
-    for (i = 2; i < lines.length; i++) {
+    for (var i = 2; i < lines.length; i++) {
       var values = lines[i].split(' ')
-      values = values.filter(function (v) { return v !== ''})
+      values = values.filter(function (v) { return v !== '' })
       if (values.length > 3) {
         partitions.push({
           major: values[0],
@@ -35,15 +35,14 @@ DiskFree.prototype.getPartitions = function (cb) {
         })
       }
     }
-    var lastPart = partitions[0]
     partitions = partitions.map(function (p) {
       try {
         var path = '/sys/block/' + p.filesystem + '/size'
         if (/\d+$/.test(p.filesystem)) {
-          var baseDev = p.filesystem.replace(/\d+/,'')
+          var baseDev = p.filesystem.replace(/\d+/, '')
           path = '/sys/block/' + baseDev + '/' + p.filesystem + '/size'
-        }    
-        var size = fs.readFileSync(rootfs + path).toString() * 512  
+        }
+        var size = fs.readFileSync(rootfs + path).toString() * 512
         console.log(p.filesystem, size, path)
         p.available = p.size - size
         p.used = size
@@ -59,8 +58,8 @@ DiskFree.prototype.getPartitions = function (cb) {
 }
 module.exports = DiskFree
 
-function testDf() {
-   var df = new DiskFree('/rootfs')
-   df.df(console.log)
+function testDf () {
+  var df = new DiskFree('/rootfs')
+  df.df(console.log)
 }
 testDf()
