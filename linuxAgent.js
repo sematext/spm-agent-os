@@ -68,6 +68,10 @@ module.exports = function () {
       return line
     },
     start: function (agent) {
+      var statsInterval = Math.max(config.collectionInterval || 20000, 20000) || 20000
+      if (statsInterval < 20000) {
+        statsInterval = 20000
+      }
       this.isLinux = (os.platform() === 'linux')
       this.formatLine = this._formatLine.bind(agent)
       this.agent = agent
@@ -223,7 +227,7 @@ module.exports = function () {
               })
             })
           }
-        }.bind(this), Math.max(config.collectionInterval || 30000) || 30000)
+        }.bind(this), statsInterval)
         if (timerId.unref) {
           timerId.unref()
         }

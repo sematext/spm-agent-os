@@ -22,8 +22,8 @@ http.createServer(function (req, res) {
 
 describe('SPM OS Metrics tests', function () {
   it('OS Agent sends metrics', function (done) {
+    this.timeout(60000)
     try {
-      this.timeout(10000)
       config.transmitInterval = 1000
       config.collectionInterval = 500
       config.retransmitInterval = 1000
@@ -44,7 +44,7 @@ describe('SPM OS Metrics tests', function () {
   })
 
   it('FAIL EXPECTED - Wait to fail with wrong SPM-Receiver URL', function (done) {
-    this.timeout(30000)
+    this.timeout(60000)
     config.transmitInterval = 1000
     config.collectionInterval = 500
     config.retransmitInterval = 1000
@@ -68,7 +68,7 @@ describe('SPM OS Metrics tests', function () {
     agent.once('stats', checkMetric)
   })
   it('SUCCESS EXPECTED - Wait for successful transmission to correct SPM-Receiver URL', function (done) {
-    this.timeout(30000)
+    this.timeout(60000)
     var SpmAgent = require('spm-agent')
     var agent = new SpmAgent(receiverUrl)
     var ElAgent = require('../index.js')
@@ -121,7 +121,5 @@ describe('SPM OS Metrics tests', function () {
         done()
       }
     })
-
   })
-
 })

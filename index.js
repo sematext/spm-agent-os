@@ -75,6 +75,10 @@ module.exports = function () {
       start: function (agent) {
         this.agent = agent
         var cpuLastValues = {}
+        var statsInterval = Math.max(config.collectionInterval || 20000, 20000) || 20000
+        if (statsInterval < 20000) {
+          statsInterval = 20000
+        }
         os.cpus().forEach(function (cpu, i) {
           cpuLastValues[i] = {idle: 0, user: 0, sys: 0, irq: 0, nice: 0}
         })
@@ -107,7 +111,7 @@ module.exports = function () {
             for (var x in metrics) {
               agent.addMetrics({ts: time, name: x, value: metrics[x], sct: 'OS'})
             }
-          }.bind(this), Math.max(config.collectionInterval || 30000) || 30000)
+          }.bind(this), statsInterval)
           if (timerId.unref) {
             timerId.unref()
           }
