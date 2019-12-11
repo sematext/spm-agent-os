@@ -1,6 +1,6 @@
 {
   "name": "spm-agent-os",
-  "version": "1.30.15",
+  "version": "1.30.16",
   "description": "SPM Agent for monitoring operating system metrics",
   "main": "index.js",
   "scripts": {
