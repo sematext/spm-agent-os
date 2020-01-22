@@ -75,7 +75,7 @@ module.exports = function () {
       this.isLinux = (os.platform() === 'linux')
       this.formatLine = this._formatLine.bind(agent)
       this.agent = agent
-      if (cluster.isMaster || process.env.NODE_APP_INSTANCE === 0 || process.env.SPM_MASTER_MODE === 1) {
+      if (cluster.isMaster || process.env.NODE_APP_INSTANCE === '0' || process.env.SPM_MASTER_MODE === '1') {
         var timerId = setInterval(function () {
           var time = Date.now()
           var load = os.loadavg()
